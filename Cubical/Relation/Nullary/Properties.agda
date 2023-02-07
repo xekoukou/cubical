@@ -177,3 +177,11 @@ Discrete→Separated d x y = Dec→Stable (d x y)
 
 Discrete→isSet : Discrete A → isSet A
 Discrete→isSet = Separated→isSet ∘ Discrete→Separated
+
+infix 0 ∥_∥!_>_!_
+
+∥_∥!_>_!_ : ∀{ℓ ℓ'} → {A : Type ℓ} → isProp A → (da : Dec A) → (db : Dec A) → {B : Dec A → Type ℓ'} → (f : (db : Dec A) → B db) → B da
+∥_∥!_>_!_ isPr (yes p1) (yes p2) {B} f = subst B (isPropDec isPr (yes p2) (yes p1)) (f (yes p2))
+∥_∥!_>_!_ isPr (yes p1) (no ¬p2) {B} f = ⊥.elim (¬p2 p1)
+∥_∥!_>_!_ isPr (no ¬p1) (yes p2) {B} f = ⊥.elim {A = λ _ → B (no ¬p1)} (¬p1 p2)
+∥_∥!_>_!_ isPr (no ¬p1) (no ¬p2) {B} f = subst B (cong no (isProp¬ _ ¬p2 ¬p1)) (f (no ¬p2))

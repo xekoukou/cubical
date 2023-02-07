@@ -20,6 +20,26 @@ private
 idfun : (A : Type ℓ) → A → A
 idfun _ x = x
 
+Tr : (A : Type ℓ) → A → A
+Tr A a = a
+
+infix 1 Tr
+syntax Tr A a = a ∈ₜ A
+
+Tl : (A : Type ℓ) → A → A
+Tl A a = a
+{-# INLINE Tl #-}
+
+infix 1 Tl
+syntax Tl A a = A ∋ₜ a
+{-# INLINE Tr #-}
+
+infix 0 !_!_
+
+!_!_ : ∀{ℓ ℓ'} → {A : Type ℓ} → (a : A) → {B : A → Type ℓ'} → (f : (a : A) → B a) → B a
+!_!_ a f = f a
+{-# INLINE !_!_ #-}
+
 infixr 9 _∘_
 
 _∘_ : (g : {a : A} → (b : B a) → C a b) → (f : (a : A) → B a) → (a : A) → C a (f a)

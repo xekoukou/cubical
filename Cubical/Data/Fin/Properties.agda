@@ -74,6 +74,9 @@ inject<-ne {n} (k , k<n) p = <→≢ k<n (cong fst p)
 Fin-fst-≡ : ∀ {n} {i j : Fin n} → fst i ≡ fst j → i ≡ j
 Fin-fst-≡ = Σ≡Prop (λ _ → isProp≤)
 
+Fin-¬≡-¬fst≡ : ∀ {n} {i j : Fin n} → ¬ (i ≡ j) → ¬ (fst i ≡ fst j) 
+Fin-¬≡-¬fst≡ x eq1 = x (Fin-fst-≡ eq1)
+
 private
   subst-app : (B : A → Type b) (f : (x : A) → B x) {x y : A} (x≡y : x ≡ y) →
               subst B x≡y (f x) ≡ f y

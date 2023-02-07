@@ -17,6 +17,7 @@ open import Cubical.Data.Nat.Properties
 open import Cubical.Induction.WellFounded
 
 open import Cubical.Relation.Nullary
+import Cubical.Data.Nat.Order as O
 
 infix 4 _≤_ _<_
 
@@ -27,6 +28,10 @@ suc m ≤ suc n = m ≤ n
 
 _<_ : ℕ → ℕ → Type₀
 m < n = suc m ≤ n
+
+to-≤ : ∀{m n} → m ≤ n → m O.≤ n
+to-≤ {zero} {n} a = O.zero-≤
+to-≤ {suc m} {suc n} a = O.suc-≤-suc (to-≤ a)
 
 _≤?_ : (m n : ℕ) → Dec (m ≤ n)
 zero  ≤? _     = yes tt
@@ -98,6 +103,9 @@ isProp≤ {suc m} {suc n} = isProp≤ {m} {n}
 <-asym : m < n → ¬ n < m
 <-asym {m} m<n n<m = ¬m<m {m} (<-trans {m} {_} {m} m<n n<m)
 
+≤-asym : m < n → ¬ n ≤ m
+≤-asym {m} {n} m<n n≤m = ¬m<m {m} (≤-trans {suc m} {n} {m} m<n n≤m)
+
 <→≢ : n < m → ¬ n ≡ m
 <→≢ {n} {m} p q = ¬m<m {m = m} (subst {x = n} (_< m) q p)
 
@@ -112,6 +120,13 @@ zero  ≟ suc n = lt _
 suc m ≟ zero = gt _
 suc m ≟ suc n = Trichotomy-suc (m ≟ n)
 
+_=?_ : ∀ m n → Dec (m ≡ n)
+m =? n = tr→dec (m ≟ n) module =?-1 where
+  tr→dec : Trichotomy m n → Dec (m ≡ n)
+  tr→dec (eq x) = yes x
+  tr→dec (lt x) = no (<→≢ x)
+  tr→dec (gt x) = no (λ z → (<→≢ x) (sym z))
+
 k≤k+n : ∀ k → k ≤ k + n
 k≤k+n zero    = _
 k≤k+n (suc k) = k≤k+n k
@@ -124,6 +139,9 @@ n≤k+n {k} n = transport (λ i → n ≤ +-comm n k i) (k≤k+n n)
 ≤-split {zero} {suc n} m≤n = inl _
 ≤-split {suc m} {suc n} m≤n
   = Sum.map (idfun _) (cong suc) (≤-split {m} {n} m≤n)
+
+≤-¬<-≡ : m ≤ n → ¬ (m < n) → (m ≡ n)
+≤-¬<-≡ {m} {n} m≤n ¬m<n = Sum.elim (λ a → Empty.rec (¬m<n a)) (λ b → b) (≤-split {m} {n} m≤n)
 
 module WellFounded where
   wf-< : WellFounded _<_

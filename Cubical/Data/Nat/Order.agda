@@ -96,6 +96,10 @@ suc-< p = pred-≤-pred (≤-suc p)
 ≤-predℕ {zero} = ≤-refl
 ≤-predℕ {suc n} = ≤-suc ≤-refl
 
+≤-suc-predℕ : n ≤ suc (predℕ n)
+≤-suc-predℕ {zero} = 1 , refl
+≤-suc-predℕ {suc n} = ≤-refl
+
 ≤-trans : k ≤ m → m ≤ n → k ≤ n
 ≤-trans {k} {m} {n} (i , p) (j , q) = i + j , l2 ∙ (l1 ∙ q)
   where

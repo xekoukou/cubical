@@ -11,6 +11,7 @@ open import Cubical.Data.Nat using (ℕ ; zero ; suc ; _+_ ; znots)
 open import Cubical.Data.Nat.Order
 open import Cubical.Data.Nat.Order.Recursive using () renaming (_≤_ to _≤′_)
 open import Cubical.Data.Sigma
+open import Cubical.Data.Vec
 open import Cubical.Data.Sum using (_⊎_; _⊎?_; inl; inr)
 
 open import Cubical.Relation.Nullary
@@ -44,6 +45,9 @@ fzero≠fone p = znots (cong fst p)
 fsuc : Fin k → Fin (suc k)
 fsuc (k , l) = (suc k , suc-≤-suc l)
 
+fext : Fin k → Fin (suc k)
+fext (k , l) = (k , ≤-suc l)
+
 -- Conversion back to ℕ is trivial...
 toℕ : Fin k → ℕ
 toℕ = fst
@@ -67,6 +71,9 @@ fsplit (suc k , k<sn) = inr ((k , pred-≤-pred k<sn) , toℕ-injective refl)
 
 inject< : ∀ {m n} (m<n : m < n) → Fin m → Fin n
 inject< m<n (k , k<m) = k , <-trans k<m m<n
+
+inject≤ : ∀ {m n} (m≤n : m ≤ n) → Fin m → Fin n
+inject≤ m≤n (k , k<m) = k , ≤-trans k<m m≤n
 
 flast : Fin (suc k)
 flast {k = k} = k , suc-≤-suc ≤-refl
@@ -109,3 +116,9 @@ FinPathℕ : {n : ℕ} (x : Fin n) (y : ℕ) → fst x ≡ y → Σ[ p ∈ _ ] (
 FinPathℕ {n = n} x y p =
     ((fst (snd x)) , (cong (λ y → fst (snd x) + y) (cong suc (sym p)) ∙ snd (snd x)))
   , (Σ≡Prop (λ _ → isProp≤) p)
+
+
+lookup' : ∀ {n} {A : Type ℓ} → Fin n → Vec A n → A
+lookup' (i , rl) [] = ⊥.rec (¬-<-zero rl)
+lookup' (zero , rl) (x ∷ xs) = x
+lookup' (suc i , rl) (x ∷ xs) = lookup' (i , pred-≤-pred rl) xs

@@ -118,14 +118,61 @@ or-assoc false y z =
   y or z              ≡[ i ]⟨ or-identityˡ y (~ i) or z ⟩
   ((false or y) or z) ∎
 or-assoc true y z  =
- true or (y or z)  ≡⟨ zeroˡ _ ⟩
-  true             ≡⟨ sym (zeroˡ _) ⟩
+ true or (y or z)  ≡⟨ zeroˡ (y or z) ⟩
+  true             ≡⟨ sym (zeroˡ z) ⟩
   true or z        ≡[ i ]⟨ zeroˡ y (~ i) or z ⟩
   (true or y) or z ∎
 
 or-idem      : ∀ x → x or x ≡ x
 or-idem false = refl
 or-idem true  = refl
+
+and-zeroˡ : ∀ x → false and x ≡ false
+and-zeroˡ false = refl
+and-zeroˡ true = refl
+
+and-zeroʳ : ∀ x → x and false ≡ false
+and-zeroʳ false = refl
+and-zeroʳ true = refl
+
+and-identityˡ : ∀ x → true and x ≡ x
+and-identityˡ false = refl
+and-identityˡ true = refl
+
+and-identityʳ : ∀ x → x and true ≡ x
+and-identityʳ false = refl
+and-identityʳ true = refl
+
+and-assoc     : ∀ x y z → x and (y and z) ≡ (x and y) and z
+and-assoc false y z =
+  false and y and z ≡⟨ and-zeroˡ (y and z) ⟩
+  false ≡⟨ sym (and-zeroˡ z) ⟩
+  false and z ≡[ i ]⟨ sym (and-zeroˡ y) i and z ⟩
+  refl
+and-assoc true y z =
+  true and y and z ≡⟨ and-identityˡ _ ⟩
+  y and z ≡[ i ]⟨ sym (and-identityˡ y) i and z ⟩
+  _ ∎
+
+and-comm : ∀ x y → x and y ≡ y and x
+and-comm false false = refl
+and-comm false true = refl
+and-comm true false = refl
+and-comm true true = refl
+
+and-idem      : ∀ x → x and x ≡ x
+and-idem false = refl
+and-idem true = refl
+
+or-and-dist : ∀ x y z → x or (y and z) ≡ (x or y) and (x or z)
+or-and-dist false false false = refl
+or-and-dist false false true = refl
+or-and-dist false true false = refl
+or-and-dist false true true = refl
+or-and-dist true false false = refl
+or-and-dist true false true = refl
+or-and-dist true true false = refl
+or-and-dist true true true = refl
 
 ⊕-identityʳ : ∀ x → x ⊕ false ≡ x
 ⊕-identityʳ false = refl

@@ -6,6 +6,7 @@ module Cubical.Data.Vec.Base where
 open import Cubical.Foundations.Prelude
 
 open import Cubical.Data.Nat
+open import Cubical.Data.Sigma
 open import Cubical.Data.FinData.Base
 
 private
@@ -65,3 +66,10 @@ lookup : ∀ {n} {A : Type ℓ} → Fin n → Vec A n → A
 lookup zero    (x ∷ xs) = x
 lookup (suc i) (x ∷ xs) = lookup i xs
 
+replace : ∀ {n} {A : Type ℓ} → (A → A) → Fin n → Vec A n → Vec A n
+replace f zero    (x ∷ xs) = f x ∷ xs
+replace f (suc i) (x ∷ xs) = x ∷ replace f i xs
+
+split : ∀ {n} {A : Type ℓ} → (k : Fin (suc n)) → Vec A n → Vec A (toℕ k) × Vec A (n ∸ toℕ k)
+split zero vs = [] , vs
+split (suc k) (x ∷ vs) = let (v1 , v2) = split k vs in (x ∷ v1) , v2
